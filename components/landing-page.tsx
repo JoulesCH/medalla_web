@@ -4,21 +4,78 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { BookOpen, Users, PenTool, FileText, Star, Award } from "lucide-react"
+import { BookOpen, Users, PenTool, FileText, Star, Award, X } from "lucide-react"
+
+import { useState, useEffect } from 'react'
 import PricingSection from './pricing-section'
 
 export function LandingPageComponent() {
+  
+  const [showPopup, setShowPopup] = useState(false)
+  const [timeLeft, setTimeLeft] = useState(30 * 60) // 30 minutes in seconds
+
+  useEffect(() => {
+    setShowPopup(true)
+
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 1) {
+          clearInterval(timer)
+          return 0
+        }
+        return prevTime - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [])
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60)
+    const seconds = time % 60
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+  }
+
   const whatsappNumber = "525539735799" // Reemplaza con tu número real
   const whatsappMessage = encodeURIComponent("Hola, me interesa obtener más información sobre las asesorías.")
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`
 
   return (
     <div className="flex flex-col min-h-screen w-full">
+      {showPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
+            <button 
+              onClick={() => setShowPopup(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+            >
+              <X size={24} />
+            </button>
+            <h2 className="text-2xl font-bold mb-4 text-center">¡Felicidades!</h2>
+            <p className="text-lg mb-4 text-center">Has ganado un cupón de descuento del 20%</p>
+            <p className="text-3xl font-bold text-center text-blue-600 mb-4">MEDALLA20</p>
+            <p className="text-sm text-gray-600 text-center">Válido por los próximos 30 minutos</p>
+            <Button 
+              className="w-full mt-4"
+              onClick={() => {
+                setShowPopup(false)
+              }}
+            >
+              ¡Entendido!
+            </Button>
+          </div>
+        </div>
+      )}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+
+        {/* Contador regresivo */}
+        <div className="bg-blue-600 text-white py-2 text-center sticky top-0 z-50">
+          <p>¡Oferta especial! Código de descuento MEDALLA20 para obtener 20% de descuento. Tiempo restante: {formatTime(timeLeft)}</p>
+        </div>
         <div className="container mx-auto flex h-14 items-center">
           <Link href="/" className="flex items-center space-x-2">
             <Award className="h-6 w-6 text-yellow-500" />
-            <span className="font-bold">Grupo de estudio medalla</span>
+            <span className="font-bold">Grupo de Estudio Medalla</span>
           </Link>
           <nav className="ml-auto flex gap-4 sm:gap-6">
             <Link className="text-sm font-medium hover:underline underline-offset-4" href="#inicio">
@@ -99,73 +156,7 @@ export function LandingPageComponent() {
             </div>
           </div>
         </section>
-	<PricingSection />
-        <section id="precios" className="w-full py-12 md:py-24 lg:py-32 bg-gray-50">
-          <div className="container mx-auto px-4 md:px-6">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-8">
-              Planes y Precios
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="flex flex-col p-6 bg-white rounded-lg shadow-lg">
-                <h3 className="text-2xl font-bold mb-4">Plan Básico</h3>
-                <p className="text-4xl font-bold mb-4">$299<span className="text-sm font-normal">/mes</span></p>
-                <ul className="mb-6 space-y-2">
-                  <li className="flex items-center">
-                    <Star className="h-5 w-5 mr-2 text-yellow-500" />
-                    4 clases particulares al mes
-                  </li>
-                  <li className="flex items-center">
-                    <Star className="h-5 w-5 mr-2 text-yellow-500" />
-                    Apoyo en tareas ilimitado
-                  </li>
-                </ul>
-                <Button className="mt-auto" onClick={() => window.open(whatsappLink, '_blank')}>Seleccionar Plan</Button>
-              </div>
-              <div className="flex flex-col p-6 bg-blue-600 text-white rounded-lg shadow-lg">
-                <h3 className="text-2xl font-bold mb-4">Plan Estándar</h3>
-                <p className="text-4xl font-bold mb-4">$499<span className="text-sm font-normal">/mes</span></p>
-                <ul className="mb-6 space-y-2">
-                  <li className="flex items-center">
-                    <Star className="h-5 w-5 mr-2 text-yellow-500" />
-                    8 clases particulares al mes
-                  </li>
-                  <li className="flex items-center">
-                    <Star className="h-5 w-5 mr-2 text-yellow-500" />
-                    Apoyo en tareas ilimitado
-                  </li>
-                  <li className="flex items-center">
-                    <Star className="h-5 w-5 mr-2 text-yellow-500" />
-                    2 sesiones de ayuda en proyectos
-                  </li>
-                </ul>
-                <Button className="mt-auto bg-white text-blue-600 hover:bg-gray-100" onClick={() => window.open(whatsappLink, '_blank')}>Seleccionar Plan</Button>
-              </div>
-              <div className="flex flex-col p-6 bg-white rounded-lg shadow-lg">
-                <h3 className="text-2xl font-bold mb-4">Plan Premium</h3>
-                <p className="text-4xl font-bold mb-4">$799<span className="text-sm font-normal">/mes</span></p>
-                <ul className="mb-6 space-y-2">
-                  <li className="flex items-center">
-                    <Star className="h-5 w-5 mr-2 text-yellow-500" />
-                    12 clases particulares al mes
-                  </li>
-                  <li className="flex items-center">
-                    <Star className="h-5 w-5 mr-2 text-yellow-500" />
-                    Apoyo en tareas ilimitado
-                  </li>
-                  <li className="flex items-center">
-                    <Star className="h-5 w-5 mr-2 text-yellow-500" />
-                    4 sesiones de ayuda en proyectos
-                  </li>
-                  <li className="flex items-center">
-                    <Star className="h-5 w-5 mr-2 text-yellow-500" />
-                    Acceso a clases grupales
-                  </li>
-                </ul>
-                <Button className="mt-auto" onClick={() => window.open(whatsappLink, '_blank')}>Seleccionar Plan</Button>
-              </div>
-            </div>
-          </div>
-        </section>
+	      <PricingSection />
         <section id="testimonios" className="w-full py-12 md:py-24 lg:py-32">
           <div className="container mx-auto px-4 md:px-6">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-8">
