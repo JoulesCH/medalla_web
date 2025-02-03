@@ -14,5 +14,5 @@ WORKDIR /app
 COPY --from=builder /app ./
 RUN npm install --production --force
 
-EXPOSE 3000
+EXPOSE 3001
 CMD ["npm", "start"]

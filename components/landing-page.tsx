@@ -12,7 +12,7 @@ import PricingSection from './pricing-section'
 export function LandingPageComponent() {
   
   const [showPopup, setShowPopup] = useState(false)
-  const [timeLeft, setTimeLeft] = useState(30 * 60) // 30 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(5 * 60) // 30 minutes in seconds
 
   useEffect(() => {
     setShowPopup(true)
@@ -54,7 +54,7 @@ export function LandingPageComponent() {
             <h2 className="text-2xl font-bold mb-4 text-center">¡Felicidades!</h2>
             <p className="text-lg mb-4 text-center">Has ganado un cupón de descuento del 20%</p>
             <p className="text-3xl font-bold text-center text-blue-600 mb-4">MEDALLA20</p>
-            <p className="text-sm text-gray-600 text-center">Válido por los próximos 30 minutos</p>
+            <p className="text-sm text-gray-600 text-center">Válido por los próximos 5 minutos</p>
             <Button 
               className="w-full mt-4"
               onClick={() => {

@@ -52,6 +52,9 @@ export default function PricingSection() {
   const handleLevelChange = (level: EducationLevel) => {
     setSelectedLevel(level)
   }
+  const calculateDiscountedPrice = (originalPrice: number) => {
+    return Math.round(originalPrice * 0.8) // 20% de descuento
+  }
 
   return (
     <section id="precios" className="w-full py-12 md:py-24 lg:py-32 bg-gray-50">
@@ -82,21 +85,30 @@ export default function PricingSection() {
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
-          {plans.map((plan) => (
-            <div key={plan.key} className="flex flex-col p-6 bg-white rounded-lg shadow-lg">
+          {plans.map((plan) => {
+            const originalPrice = levelPrices[selectedLevel][plan.key]
+            const discountedPrice = calculateDiscountedPrice(originalPrice)
+
+            return (<div key={plan.key} className="flex flex-col p-6 bg-white rounded-lg shadow-lg">
               <h3 className="text-2xl font-bold mb-4">{plan.name}</h3>
-              <p className="text-4xl font-bold mb-4">
-                ${levelPrices[selectedLevel][plan.key]}
-                <span className="text-sm font-normal">/hr</span>
-              </p>
+              <div className="mb-4">
+                  <p className="text-2xl line-through">
+                    ${originalPrice}
+                  </p>
+                  <p className="text-5xl font-bold ">
+                    ${discountedPrice}
+                    <span className="text-sm font-normal text-gray-600">/hr</span>
+                  </p>
+                  <p className="text-sm text-green-600 font-semibold">¡20% de descuento aplicado!</p>
+                </div>
               <ul className="mb-6 space-y-2 flex-grow">
                 <li className="flex items-center">
                   <Star className="h-5 w-5 mr-2 text-yellow-500" />
-                  {plan.hours} {plan.hours === 1 ? 'hora' : 'horas'} a la semana
+                  <span className='font-bold'> {plan.hours} {plan.hours === 1 ? 'hora' : 'horas'}  </span> <span>  &nbsp; a la semana </span>
                 </li>
                 <li className="flex items-center">
                   <Star className="h-5 w-5 mr-2 text-yellow-500" />
-                  Apoyo en tareas ilimitado
+                  Apoyo en tareas ilimitado*
                 </li>
                 {plan.key !== 'basico' && (
                   <li className="flex items-center">
@@ -118,8 +130,10 @@ export default function PricingSection() {
                 Seleccionar Plan
               </Button>
             </div>
-          ))}
+            )
+        })}
         </div>
+        <span className='pt-9 text-slate-400 flex'>*Disponibilidad para resolver dudas concretas y proporcionar retroalimentación a través de mensajería durante el tiempo de vigencia del plan.</span>
       </div>
     </section>
   )
