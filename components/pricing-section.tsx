@@ -75,7 +75,7 @@ export default function PricingSection() {
   }
 
   return (
-    <section id="precios" className="w-full py-12 md:py-24 lg:py-32 bg-gray-50">
+    <section id="precios" className="w-full pt-12 md:pt-24 lg:pt-32 bg-gray-50">
       <div className="container mx-auto px-4 md:px-6">
         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-8">
           Planes y precios

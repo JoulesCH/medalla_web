@@ -6,16 +6,44 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { BookOpen, Users, PenTool, FileText, Star, Award, X } from "lucide-react"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, use } from 'react'
 import PricingSection from './pricing-section'
 import { useCookies } from 'next-client-cookies';
-import { cookies } from "next/headers";
 
 export function LandingPageComponent() {
-  const showpopup = cookies().get("showpopup")
-  console.log(showpopup)
+  const [timeLeft, setTimeLeft] = useState(0) 
   const [showPopup, setShowPopup] = useState(false)
-  const [timeLeft, setTimeLeft] = useState(5 * 60) // 30 minutes in seconds
+
+  const cookies = useCookies()
+  const showpopup = cookies.get("showpopup")
+
+  useEffect(() => {
+    if(!showpopup){
+        setShowPopup(true)
+        cookies.set("showpopup", "true") 
+        const now = new Date()
+        cookies.set("time", now.toISOString()) 
+        setTimeLeft(5 * 60) // 5 minutes in seconds
+    } else {
+        const time = cookies.get("time")
+        const now = new Date()
+        const timeDiff = Math.abs(now.getTime() - new Date(time).getTime())
+        const diffMinutes = (timeDiff / 1000) / 60
+        if(diffMinutes >= 5){
+            setShowPopup(true)
+            cookies.set("showpopup", "true") 
+            cookies.set("time", now.toISOString()) 
+            setTimeLeft(5 * 60) // 5 minutes in seconds
+        } else {
+            cookies.set("showpopup", "false") 
+            // update timeLeft
+            const newTimeLeft = 5 * 60 - diffMinutes * 60
+            setTimeLeft(newTimeLeft)
+        }
+    }
+  }, [])
+
+  
   const [subject, setSubject] = useState("")
   const subjects = ["Matemáticas", "Física", "Inglés", "Programación"]
 
@@ -68,7 +96,7 @@ export function LandingPageComponent() {
 
 
   useEffect(() => {
-    setShowPopup(true)
+    const toshow = cookies.get("showpopup")
 
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => {
@@ -85,11 +113,11 @@ export function LandingPageComponent() {
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60)
-    const seconds = time % 60
+    const seconds = Math.floor(time % 60)
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
   }
 
-  const whatsappNumber = "525532507053" // Reemplaza con tu número real
+  const whatsappNumber = "525532507053" 
   const whatsappMessage = encodeURIComponent("Hola, me interesa obtener más información sobre las asesorías.")
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`
 
