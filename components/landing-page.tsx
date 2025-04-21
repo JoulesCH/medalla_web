@@ -27,7 +27,7 @@ export function LandingPageComponent() {
     } else {
         const time = cookies.get("time")
         const now = new Date()
-        const timeDiff = Math.abs(now.getTime() - new Date(time).getTime())
+        const timeDiff = time ? Math.abs(now.getTime() - new Date(time).getTime()) : 0
         const diffMinutes = (timeDiff / 1000) / 60
         if(diffMinutes >= 5){
             setShowPopup(true)
