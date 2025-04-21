@@ -13,7 +13,7 @@ type LevelPrices = {
   }
 }
 
-const individualLevelPrices: LevelPrices = {
+const levelPrices: LevelPrices = {
   secundaria: {
     basico: 200,
     estandar: 160,
@@ -31,24 +31,6 @@ const individualLevelPrices: LevelPrices = {
   }
 }
 
-const groupLevelPrices: LevelPrices = {
-  secundaria: {
-    basico: 140,
-    estandar: 100,
-    avanzado: 70
-  },
-  preparatoria: {
-    basico: 160,
-    estandar: 120,
-    avanzado: 80
-  },
-  superior: {
-    basico: 180,
-    estandar: 140,
-    avanzado: 100
-  }
-}
-
 const educationLevels = [
   { key: 'secundaria', name: 'Secundaria', icon: BookOpen },
   { key: 'preparatoria', name: 'Preparatoria', icon: GraduationCap },
@@ -63,7 +45,7 @@ const plans = [
 
 export default function PricingSection() {
   const [selectedLevel, setSelectedLevel] = useState<EducationLevel>('secundaria')
-  const whatsappNumber = "525532507053" 
+  const whatsappNumber = "525584734401" 
   const whatsappMessage = encodeURIComponent("Hola, me interesa obtener más información sobre las asesorías.")
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`
 
@@ -80,11 +62,8 @@ export default function PricingSection() {
         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-8">
           Planes y precios
         </h2>
-        
-        {/* Sección de Planes Individuales */}
         <div className="mb-12">
-          <h3 className="text-2xl font-semibold text-center mb-6">Planes Individuales</h3>
-          <h4 className="text-xl font-semibold text-center mb-6">Selecciona tu nivel educativo</h4>
+          <h3 className="text-2xl font-semibold text-center mb-6">Selecciona tu nivel educativo</h3>
           <div className="flex flex-wrap justify-center gap-6">
             {educationLevels.map((level) => {
               const Icon = level.icon
@@ -107,7 +86,7 @@ export default function PricingSection() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
           {plans.map((plan) => {
-            const originalPrice = individualLevelPrices[selectedLevel][plan.key]
+            const originalPrice = levelPrices[selectedLevel][plan.key]
             const discountedPrice = calculateDiscountedPrice(originalPrice)
 
             return (<div key={plan.key} className="flex flex-col p-6 bg-white rounded-lg shadow-lg">
@@ -124,98 +103,22 @@ export default function PricingSection() {
                 </div>
               <ul className="mb-6 space-y-2 flex-grow">
                 <li className="flex items-center">
-                  <Star className="h-5 w-5 mr-2 text-[#ff9e1a]" />
+                  <Star className="h-5 w-5 mr-2 text-yellow-500" />
                   <span className='font-bold'> {plan.hours} {plan.hours === 1 ? 'hora' : 'horas'}  </span> <span>  &nbsp; a la semana </span>
                 </li>
                 <li className="flex items-center">
-                  <Star className="h-5 w-5 mr-2 text-[#ff9e1a]" />
+                  <Star className="h-5 w-5 mr-2 text-yellow-500" />
                   Apoyo en tareas ilimitado*
                 </li>
                 {plan.key !== 'basico' && (
                   <li className="flex items-center">
-                    <Star className="h-5 w-5 mr-2 text-[#ff9e1a]" />
+                    <Star className="h-5 w-5 mr-2 text-yellow-500" />
                     Acceso a recursos adicionales
                   </li>
                 )}
                 {['premium', 'intensivo'].includes(plan.key) && (
                   <li className="flex items-center">
-                    <Star className="h-5 w-5 mr-2 text-[#ff9e1a]" />
-                    Sesiones de preparación para exámenes
-                  </li>
-                )}
-              </ul>
-              <Button
-                className="mt-auto"
-                onClick={() => window.open(`${whatsappLink}&text=${encodeURIComponent(`Hola, me interesa el ${plan.name} para ${selectedLevel}`)}`)}
-              >
-                Seleccionar Plan
-              </Button>
-            </div>
-            )
-        })}
-        </div>
-        <span className='pt-9 text-slate-400 flex'>*Disponibilidad para resolver dudas concretas y proporcionar retroalimentación a través de mensajería durante el tiempo de vigencia del plan.</span>
-      
-        {/* Sección de Planes Grupales */}
-        <div className="mt-12 mb-12">
-          <h3 className="text-2xl font-semibold text-center mb-6">Planes Grupales</h3>
-          <h3 className="text-2xl font-semibold text-center mb-6">De 2 a 4 alumnos</h3>
-          <h4 className="text-xl font-semibold text-center mb-6">Selecciona tu nivel educativo</h4>
-          <div className="flex flex-wrap justify-center gap-6">
-            {educationLevels.map((level) => {
-              const Icon = level.icon
-              return (
-                <button
-                  key={level.key}
-                  onClick={() => handleLevelChange(level.key)}
-                  className={`flex flex-col items-center p-6 rounded-lg shadow-md transition-all ${
-                    selectedLevel === level.key
-                      ? 'bg-orange-600 text-white scale-105'
-                      : 'bg-white text-gray-800 hover:bg-gray-100'
-                  }`}
-                >
-                  <Icon className="w-12 h-12 mb-4" />
-                  <span className="text-lg font-medium">{level.name}</span>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
-          {plans.map((plan) => {
-            const originalPrice = groupLevelPrices[selectedLevel][plan.key]
-            const discountedPrice = calculateDiscountedPrice(originalPrice)
-
-            return (<div key={plan.key} className="flex flex-col p-6 bg-white rounded-lg shadow-lg">
-              <h3 className="text-2xl font-bold mb-4">{plan.name}</h3>
-              <div className="mb-4">
-                  <p className="text-2xl line-through">
-                    ${originalPrice}
-                  </p>
-                  <p className="text-5xl font-bold ">
-                    ${discountedPrice}
-                    <span className="text-sm font-normal text-gray-600">/hr</span>
-                  </p>
-                  <p className="text-sm text-green-600 font-semibold">¡20% de descuento aplicado!</p>
-                </div>
-              <ul className="mb-6 space-y-2 flex-grow">
-              <li className="flex items-center">
-                  <Star className="h-5 w-5 mr-2 text-[#ff9e1a]" />
-                  <span className='font-bold'> {plan.hours} {plan.hours === 1 ? 'hora' : 'horas'}  </span> <span>  &nbsp; a la semana </span>
-                </li>
-                <li className="flex items-center">
-                  <Star className="h-5 w-5 mr-2 text-[#ff9e1a]" />
-                  Apoyo en tareas ilimitado*
-                </li>
-                {plan.key !== 'basico' && (
-                  <li className="flex items-center">
-                    <Star className="h-5 w-5 mr-2 text-[#ff9e1a]" />
-                    Acceso a recursos adicionales
-                  </li>
-                )}
-                {['premium', 'intensivo'].includes(plan.key) && (
-                  <li className="flex items-center">
-                    <Star className="h-5 w-5 mr-2 text-[#ff9e1a]" />
+                    <Star className="h-5 w-5 mr-2 text-yellow-500" />
                     Sesiones de preparación para exámenes
                   </li>
                 )}

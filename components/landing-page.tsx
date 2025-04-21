@@ -8,11 +8,64 @@ import { BookOpen, Users, PenTool, FileText, Star, Award, X } from "lucide-react
 
 import { useState, useEffect } from 'react'
 import PricingSection from './pricing-section'
+import { useCookies } from 'next-client-cookies';
+import { cookies } from "next/headers";
 
 export function LandingPageComponent() {
-  
+  const showpopup = cookies().get("showpopup")
+  console.log(showpopup)
   const [showPopup, setShowPopup] = useState(false)
   const [timeLeft, setTimeLeft] = useState(5 * 60) // 30 minutes in seconds
+  const [subject, setSubject] = useState("")
+  const subjects = ["Matemáticas", "Física", "Inglés", "Programación"]
+
+
+  const [style, setStyle] = useState({
+    transform: 'translateY(0%)',
+    opacity: 1,
+    transition: 'transform 0.5s cubic-bezier(0.48, 0.08, 0.19, 1), opacity 0.5s',
+  });
+
+  useEffect(() => {
+    let currentIndex = 0;
+
+    const interval = setInterval(() => {
+      // 1. Animar salida hacia arriba
+      setStyle((prev) => ({
+        ...prev,
+        transform: 'translateY(-100%)',
+        opacity: 0,
+      }));
+
+      // 2. Cambiar el texto después de la animación de salida
+      setTimeout(() => {
+        currentIndex = (currentIndex + 1) % subjects.length;
+        setSubject(subjects[currentIndex]);
+
+        // 3. Posicionar el nuevo texto debajo sin transición
+        setStyle({
+          transform: 'translateY(100%)',
+          opacity: 0,
+          transition: 'none',
+        });
+
+        // 4. En el siguiente frame, animar entrada desde abajo
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            setStyle({
+              transform: 'translateY(0%)',
+              opacity: 1,
+              transition:
+                'transform 0.5s cubic-bezier(0.48, 0.08, 0.19, 1), opacity 0.5s',
+            });
+          });
+        });
+      }, 500);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [setSubject]);
+
 
   useEffect(() => {
     setShowPopup(true)
@@ -36,7 +89,7 @@ export function LandingPageComponent() {
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
   }
 
-  const whatsappNumber = "525539735799" // Reemplaza con tu número real
+  const whatsappNumber = "525532507053" // Reemplaza con tu número real
   const whatsappMessage = encodeURIComponent("Hola, me interesa obtener más información sobre las asesorías.")
   const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`
 
@@ -53,7 +106,7 @@ export function LandingPageComponent() {
             </button>
             <h2 className="text-2xl font-bold mb-4 text-center">¡Felicidades!</h2>
             <p className="text-lg mb-4 text-center">Has ganado un cupón de descuento del 20%</p>
-            <p className="text-3xl font-bold text-center text-blue-600 mb-4">MEDALLA20</p>
+            <p className="text-3xl font-bold text-center text-[#ff9e1a] mb-4">MEDALLA20</p>
             <p className="text-sm text-gray-600 text-center">Válido por los próximos 5 minutos</p>
             <Button 
               className="w-full mt-4"
@@ -69,12 +122,12 @@ export function LandingPageComponent() {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
 
         {/* Contador regresivo */}
-        <div className="bg-blue-600 text-white py-2 text-center sticky top-0 z-50">
+        <div className="bg-[#ff9e1a] text-white py-2 text-center sticky top-0 z-50">
           <p>¡Oferta especial! Código de descuento MEDALLA20 para obtener 20% de descuento. Tiempo restante: {formatTime(timeLeft)}</p>
         </div>
         <div className="container mx-auto flex h-14 items-center">
           <Link href="/" className="flex items-center space-x-2">
-            <Award className="h-6 w-6 text-yellow-500" />
+            <Image width="40" height="40" alt="logo" src="/gemico.png"/>
             <span className="font-bold">Grupo de Estudio Medalla</span>
           </Link>
           <nav className="ml-auto flex gap-4 sm:gap-6">
@@ -101,11 +154,19 @@ export function LandingPageComponent() {
           <div className="container mx-auto px-4 md:px-6">
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
-                  Asesorías Personalizadas en Matemáticas, Física y Ciencias
+                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none" >
+                  Asesorías Personalizadas en <span className = "pb-8 pt-6" style={{
+                    position: 'relative',
+                    height: '60px',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>  <span style={{ ...style, position: 'absolute', margin: 0 }}>  {subject} </span> </span> 
                 </h1>
                 <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl">
-                  Mejora tus habilidades y alcanza tus metas académicas con nuestros expertos
+                Alcanza tus metas académicas de la mano de asesores jóvenes altamente capacitados.
+                
                 </p>
               </div>
               <Button
@@ -134,19 +195,19 @@ export function LandingPageComponent() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               <div className="flex flex-col items-center text-center">
-                <BookOpen className="h-12 w-12 mb-4 text-blue-600" />
+                <BookOpen className="h-12 w-12 mb-4 text-[#ff9e1a]" />
                 <h3 className="text-xl font-bold mb-2">Clases Particulares</h3>
                 <p className="text-gray-500">Atención personalizada para tus necesidades específicas</p>
               </div>
               <div className="flex flex-col items-center text-center">
                 <Users className="h-12 w-12 mb-4 text-green-600" />
                 <h3 className="text-xl font-bold mb-2">Clases Grupales</h3>
-                <p className="text-gray-500">Aprende en un ambiente colaborativo y dinámico</p>
+                <p className="text-gray-500">Aprende en un ambiente colaborativo y dinámico con tus mejores amigos</p>
               </div>
               <div className="flex flex-col items-center text-center">
                 <PenTool className="h-12 w-12 mb-4 text-yellow-600" />
                 <h3 className="text-xl font-bold mb-2">Apoyo en Tareas</h3>
-                <p className="text-gray-500">Resuelve tus dudas y mejora tu comprensión</p>
+                <p className="text-gray-500">Resuelve tus dudas y mejora tu comprensión disponible 24/7</p>
               </div>
               <div className="flex flex-col items-center text-center">
                 <FileText className="h-12 w-12 mb-4 text-purple-600" />
@@ -164,50 +225,42 @@ export function LandingPageComponent() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="flex flex-col p-6 bg-white rounded-lg shadow-lg">
-                <p className="mb-4 text-gray-600 italic">"Gracias a las asesorías de Grupo de estudio medalla, mejoré mis calificaciones en matemáticas y física. Los profesores son excelentes."</p>
+                <p className="mb-4 text-gray-600 italic">"La asesoría me ayudó mucho porque ahora entiendo mejor los temas y me siento más seguro al resolver ejercicios. 
+                  Antes me costaba trabajo, pero con las explicaciones claras y los ejemplos, todo se me hizo más fácil."</p>
                 <div className="flex items-center mt-auto">
-                  <Image
-                    src="/placeholder.svg?height=40&width=40"
-                    alt="Foto de Ana"
-                    width={40}
-                    height={40}
-                    className="rounded-full mr-4"
-                  />
+                  
                   <div>
-                    <p className="font-bold">Ana García</p>
-                    <p className="text-sm text-gray-500">Estudiante de Preparatoria</p>
+                    <p className="font-bold">Guillen Reyes Francisco Xavier</p>
+                    <p className="text-sm text-gray-500">4to año, E.N.P 3 Justo Sierra </p>
                   </div>
                 </div>
               </div>
               <div className="flex flex-col p-6 bg-white rounded-lg shadow-lg">
-                <p className="mb-4 text-gray-600 italic">"El apoyo en proyectos fue fundamental para aprobar mi curso de ciencias. Muy recomendado."</p>
+                <p className="mb-4 text-gray-600 italic">"Estamos muy contentos con la asesoría porque nuestro hijo ha mejorado mucho en la materia, ahora se siente más seguro. 
+                  La enseñanza fue clara y personalizada, lo que hizo una gran diferencia en su aprendizaje."</p>
                 <div className="flex items-center mt-auto">
-                  <Image
-                    src="/placeholder.svg?height=40&width=40"
-                    alt="Foto de Carlos"
-                    width={40}
-                    height={40}
-                    className="rounded-full mr-4"
-                  />
+                    {/* <Image
+                      src="/placeholder.svg?height=40&width=40"
+                      alt="Foto de Carlos"
+                      width={40}
+                      height={40}
+                      className="rounded-full mr-4"
+                    /> */}
                   <div>
-                    <p className="font-bold">Carlos Rodríguez</p>
-                    <p className="text-sm text-gray-500">Estudiante Universitario</p>
+                    <p className="font-bold"> Guillen Castro Francisco Javier  </p>
+                    <p className="text-sm text-gray-500">Padre de Guillen Reyes Francisco Xavier </p>
                   </div>
                 </div>
               </div>
               <div className="flex flex-col p-6 bg-white rounded-lg shadow-lg">
-                <p className="mb-4 text-gray-600 italic">"Las clases grupales son geniales. Aprendí mucho y conocí a otros estudiantes con los mismos intereses."</p>
+                <p className="mb-4 text-gray-600 italic">"Las clases me facilitaron el comprendimiento  de las materias y me facilitaron al momento de hacer alguna práctica o ejercicio.
+                La profesora que explica te enseña detenidamente y en el modo que se te facilite más respondiendo de manera paciente cada una de tus dudas y poniendo ejemplos y 
+                ejercicios para que practiques además al finalizar la clase te manda algún apunte realizado en clase referente a el tema que se vio."</p>
                 <div className="flex items-center mt-auto">
-                  <Image
-                    src="/placeholder.svg?height=40&width=40"
-                    alt="Foto de Laura"
-                    width={40}
-                    height={40}
-                    className="rounded-full mr-4"
-                  />
+                 
                   <div>
-                    <p className="font-bold">Laura Martínez</p>
-                    <p className="text-sm text-gray-500">Estudiante de Secundaria</p>
+                    <p className="font-bold">Renata Olvera Flores</p>
+                    <p className="text-sm text-gray-500">Estudiante Cuarto Grado ENP 3</p>
                   </div>
                 </div>
               </div>
@@ -215,85 +268,56 @@ export function LandingPageComponent() {
           </div>
         </section>
         <section id="contacto" className="w-full py-12 md:py-24 lg:py-32 bg-blue-50">
-          <div className="container mx-auto px-4 md:px-6">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-8">
-              Contáctanos
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <form className="space-y-4">
-                <Input placeholder="Nombre" />
-                <Input type="email" placeholder="Correo electrónico" />
-                <Textarea placeholder="Mensaje" />
-                <Button type="submit" className="w-full">Enviar mensaje</Button>
-              </form>
-              <div className="space-y-4">
-                <p className="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                  </svg>
-                 contacto@estudiomedalla.com
-                </p>
-                <p className="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                  </svg>
-                  +52 55 3973 5799
-                </p>
-                <div className="flex space-x-4">
-                  <Link href="#" className="text-blue-600 hover:text-blue-800">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
-                    </svg>
-                  </Link>
-                  <Link href="#" className="text-blue-600 hover:text-blue-800">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
-                    </svg>
-                  </Link>
-                  <Link href="#" className="text-blue-600 hover:text-blue-800">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                    </svg>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+  <div className="container mx-auto px-4 md:px-6">
+    <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-8">
+      Contáctanos
+    </h2>
+
+    <div className="text-center flex flex-col items-center space-y-2">
+  <div className="flex items-center justify-center">
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-[#ff9e1a]" viewBox="0 0 20 20" fill="currentColor">
+      <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+      <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+    </svg>
+    <p className="m-0">gemlindavista@gmail.com</p>
+  </div>
+
+  <div className="flex items-center justify-center">
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-[#ff9e1a]" viewBox="0 0 20 20" fill="currentColor">
+      <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+    </svg>
+    <p className="m-0">+52 55 32507053</p>
+  </div>
+
+  <div className="flex justify-center space-x-4">
+    <Link href="https://www.facebook.com/profile.php?id=61565021160972" className="text-[#ff9e1a] hover:text-[#ff9e1a]" target="_blank">
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
+      </svg>
+    </Link>
+    <Link href="https://www.instagram.com/gemlindavista/" className="text-[#ff9e1a] hover:text-[#ff9e1a]" target="_blank">
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+      </svg>
+    </Link>
+  </div>
+</div>
+
+
+  </div>
+</section>
       </main>
       <footer className="w-full py-6 bg-gray-800 text-white">
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-              <h3 className="text-lg font-bold mb-4">Enlaces Rápidos</h3>
-              <ul className="space-y-2">
-                <li><Link href="#inicio" className="hover:underline">Inicio</Link></li>
-                <li><Link href="#servicios" className="hover:underline">Servicios</Link></li>
-                <li><Link href="#precios" className="hover:underline">Precios</Link></li>
-                <li><Link href="#testimonios" className="hover:underline">Testimonios</Link></li>
-                <li><Link href="#contacto" className="hover:underline">Contacto</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-bold mb-4">Servicios</h3>
-              <ul className="space-y-2">
-                <li>Clases Particulares</li>
-                <li>Clases Grupales</li>
-                <li>Apoyo en Tareas</li>
-                <li>Ayuda en Proyectos</li>
-              </ul>
-            </div>
+            
             <div>
               <h3 className="text-lg font-bold mb-4">Legal</h3>
               <ul className="space-y-2">
-                <li><Link href="#" className="hover:underline">Términos y Condiciones</Link></li>
-                <li><Link href="#" className="hover:underline">Política de Privacidad</Link></li>
+                <li><Link href="/terminos" className="hover:underline">Términos y Condiciones</Link></li>
+                <li><Link href="/privacidad" className="hover:underline">Política de Privacidad</Link></li>
               </ul>
             </div>
-          </div>
-          <div className="mt-8 text-center">
-            <p>&copy; 2024 Grupo de estudio medalla. Todos los derechos reservados.</p>
           </div>
         </div>
       </footer>
